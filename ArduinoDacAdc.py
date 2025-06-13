@@ -17,22 +17,10 @@ class ArduinoDacAdc(Instrument):
         dac_voltages = {0:0.0, 1:0.0, 2:0.0, 3:0.0}
 
         self.ser = serial.Serial(port, baudrate=baudrate, timeout=timeout)
-        cmd = f"*IDN? r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Identifying... {response}")
-        cmd = f"*RDY? r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Ready? {response}")
+        print("Identifying...")
+        self._board_identify()
+        print("Ready?")
+        self._board_ready()
 
     def _set_all_dac_zero(self):
         for i in range(0,4):
