@@ -64,7 +64,18 @@ class ArduinoDacAdc(Instrument):
             counter +=1
         print(f"Response: {response}")
         return str(response)
-
+    
+    # Same as RAMP1 but with 2 DACs
+    def _ramp2(self, channel1: int, channel2: int, v_initial: float, v_final: float, steps: int, delay: int):
+        cmd = f"RAMP2,{channel1},{channel2},{v_initial},{v_final},{steps},{delay} r\n"
+        counter = 0
+        while counter !=3:
+            self.ser.write(bytes(cmd, 'utf-8'))
+            time.sleep(0.05)
+            response = self.ser.readline().strip()
+            counter +=1
+        print(f"Response: {response}")
+        return str(response)
         
     def _board_ready(self):
         cmd = f"*RDY? r\n"
