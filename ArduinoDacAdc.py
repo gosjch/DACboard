@@ -52,50 +52,43 @@ class ArduinoDacAdc(Instrument):
         print(f"ADC Response: {response}")
         return str(response)
     
+    def _write_get_response(self, cmd):
+        counter = 0
+        while counter !=3:
+            self.ser.write(bytes(cmd, 'utf-8'))
+            time.sleep(0.05)
+            response = self.ser.readline().strip()
+            counter +=1
+        print(f"Response: {response}")
+        return str(response)
+
+    
     # To ramp up a DAC Channel 2 from -8.5V to +4.8V in 1000 steps with a delay
     # of 30 microseconds per step RAMP1,2,-8.5,4.8,1000,30 r
     def _ramp1(self, channel: int, v_initial: float, v_final: float, steps: int, delay: int):
         cmd = f"RAMP1,{channel},{v_initial},{v_final},{steps},{delay} r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Response: {response}")
-        return str(response)
+        return _write_get_response(cmd)
     
     # Same as RAMP1 but with 2 DACs
     def _ramp2(self, channel1: int, channel2: int, v_initial: float, v_final: float, steps: int, delay: int):
         cmd = f"RAMP2,{channel1},{channel2},{v_initial},{v_final},{steps},{delay} r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Response: {response}")
-        return str(response)
+        return _write_get_response(cmd)
         
-    def _board_ready(self):
+    def _ready(self):
         cmd = f"*RDY? r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Response: {response}")
+        return _write_get_response(cmd)
 
-    def _board_identify(self):
+    def _identify(self):
         cmd = f"*IDN? r\n"
-        counter = 0
-        while counter !=3:
-            self.ser.write(bytes(cmd, 'utf-8'))
-            time.sleep(0.05)
-            response = self.ser.readline().strip()
-            counter +=1
-        print(f"Response: {response}")
+        return _write_get_response(cmd)
+        
+    def _reset(self):
+        cmd = f"RESET r\n"
+        return _write_get_response(cmd)
+
+    def _talk(self):
+        cmd = f"TALK r\n"
+        return _write_get_response(cmd)
         
 
     def close(self):
